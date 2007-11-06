@@ -10,11 +10,10 @@
 <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" sourcepath="${PROJECT_FRAMEWORKS}/source" useDefaultLinkType="false"/>
 </modifiedEntries>
 </libraryPathEntry>
-<libraryPathEntry kind="3" linkType="1" path="/smugmuglib/bin/smugmuglib.swc" useDefaultLinkType="false"/>
-<libraryPathEntry kind="3" linkType="1" path="/as3flexunitlib/bin/as3flexunitlib.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="3" linkType="1" path="/as3smugmuglib/bin/as3smugmuglib.swc" useDefaultLinkType="false"/>
+<libraryPathEntry kind="1" linkType="1" path="buildlib"/>
 </libraryPath>
 <sourceAttachmentPath>
-<sourceAttachmentPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/charts.swc" sourcepath="${PROJECT_FRAMEWORKS}/source" useDefaultLinkType="false"/>
 <sourceAttachmentPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" sourcepath="${PROJECT_FRAMEWORKS}/source" useDefaultLinkType="false"/>
 <sourceAttachmentPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/framework.swc" sourcepath="${PROJECT_FRAMEWORKS}/source" useDefaultLinkType="false"/>
 </sourceAttachmentPath>
