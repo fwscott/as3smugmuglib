@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" applicationComplete="init()" layout="absolute" width="258" height="363" verticalScrollPolicy="off" horizontalScrollPolicy="off">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.CloseEvent;
+			import mx.binding.utils.BindingUtils;
+			import com.fwscott.webapis.smugmug.v1_2_0.events.SmugMugResultEvent;
+			import mx.collections.ArrayCollection;
+			import com.fwscott.webapis.smugmug.v1_2_0.methodgroups.Upload;
+			import com.fwscott.webapis.smugmug.v1_2_0.SmugMugService;
+		
+			[Bindable]
+			private var filesToUpload:ArrayCollection;
+			private var service:SmugMugService;
+			
+			
+			[Bindable]
+			private var uploadCount:int = 0;
+
+			[Bindable]
+			private var albums:ArrayCollection;
+			
+			private var _selectedDefaultAlbum:Object;
+						
+			private var fileBrowser:FileReferenceList;
+			
+					
+			private function init():void {
+				filesToUpload = new ArrayCollection();
+				fileBrowser = new FileReferenceList();
+				fileBrowser.addEventListener(Event.SELECT, onFileBrowserSelect);
+				service = new SmugMugService("rXcjRmeEXiGS6gkjWunJdLPVuUuwNkx4",false);
+				//TODO: how to get the currently logged in session?
+				// guess it would have to be served from the SmugMug domain
+				service.addEventListener(SmugMugResultEvent.ALBUMS_GET, onGetAlbums);
+				albums = new ArrayCollection();
+				service.albums.get(null,true);
+			}
+			
+			
+			private function onFileBrowserSelect(event:Event):void {
+				var files:Array = fileBrowser.fileList;
+				for each (var f:FileReference in files) {
+					addFile(  f  );
+					service.images.upload(f,selectedDefaultAlbum.id,"");
+				}
+			}
+			private function onBrowseForFilesSelect(event:Event):void {
+				fileBrowser.browse();
+			}
+			
+			
+			private function onGetAlbums(event:SmugMugResultEvent):void {
+				albums.source = event.data.Albums as Array;
+				if(albums.length > 0)
+					selectedDefaultAlbum = albums.getItemAt(0);
+				else
+					selectedDefaultAlbum = null;
+			}
+			
+			[Bindable]
+			private function get selectedDefaultAlbum():Object {
+				return _selectedDefaultAlbum;
+			}
+			private function set selectedDefaultAlbum(obj:Object):void {
+				_selectedDefaultAlbum = obj;				
+			}								
+
+	
+	        private function addFile( fileRef:FileReference ) :void
+	        {
+	        	var tmpObj:Object = new Object();
+	        	tmpObj.fileRef = fileRef;
+	        	tmpObj.label = fileRef.name;
+	            filesToUpload.addItem( tmpObj );
+	
+ 	            var fileComponent:FileStatusComponent = new FileStatusComponent();
+				service.images.upload(fileRef,selectedDefaultAlbum.id,"");
+	            fileRef.addEventListener(DataEvent.UPLOAD_COMPLETE_DATA,completeHandler);
+
+ 	        }
+	
+	        private function completeHandler( e:Event ) :void
+	        {
+	            var f:FileReference = FileReference(e.target);
+	            for( var i:uint; i < filesToUpload.length; i++ )
+	            {
+	                if( f == filesToUpload.getItemAt(i).fileRef )
+	                {
+	                   filesToUpload.removeItemAt(i);
+	                   uploadCount++;
+	                }
+	            }
+	        }
+	
+		]]>
+	</mx:Script>
+	<mx:List width="100%" x="0" top="23" bottom="27" itemRenderer="FileStatusComponent" backgroundAlpha=".1"></mx:List>
+	<mx:Button label="Browse" width="100%" left="0" bottom="0" height="28" click="fileBrowser.browse()"/>
+	<mx:Label x="10" y="2" text="Upload To"/>
+	<mx:ComboBox y="0" dataProvider="{albums}" labelField="Title" right="10" left="80"></mx:ComboBox>
+	<mx:Image y="76" width="198" height="91" source="@Embed('resources/smuglogo.png')" rotation="60" left="105"/>
+	
+</mx:Application>
