@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:WindowedApplication xmlns:mx="http://www.adobe.com/2006/mxml" applicationComplete="init()" layout="absolute" xmlns:ns1="qs.controls.*" currentState="notloggedin">
+	<mx:Script>
+		<![CDATA[
+			import mx.events.DragEvent;
+			import mx.collections.IViewCursor;
+			import com.fwscott.webapis.smugmug.v1_2_1.events.SmugMugResultEvent;
+			import com.fwscott.webapis.smugmug.v1_2_1.SmugMugService;
+			import mx.collections.ArrayCollection;
+
+			[Bindable]
+			private var albums:ArrayCollection;
+			
+			[Bindable]
+			private var images:ArrayCollection;
+			
+			private var service:SmugMugService;
+
+			[Bindable]
+			private var statusString:String;
+			
+			private var pendingAlbums:int;
+			
+			[Bindable]
+			private var lockApp:Boolean = false;
+			
+			private function init():void {
+				albums = new ArrayCollection();
+				images = new ArrayCollection();
+				
+				service = new SmugMugService("rXcjRmeEXiGS6gkjWunJdLPVuUuwNkx4",false);
+				service.addEventListener(SmugMugResultEvent.LOGIN_WITHPASSWORD, onLogin);
+				service.addEventListener(SmugMugResultEvent.ALBUMS_GET, onGetAlbums);
+				service.addEventListener(SmugMugResultEvent.LOGOUT, onLogout);
+				service.addEventListener(SmugMugResultEvent.IMAGES_GET, onImagesGet);
+				service.addEventListener(SmugMugResultEvent.IMAGES_CHANGEPOSITION, onImagesChangePosition);
+				
+				var loginSharedObj:SharedObject = SharedObject.getLocal("loginInfo");
+  				if(loginSharedObj.size > 0) {
+					service.addEventListener(SmugMugResultEvent.LOGIN_WITHHASH, onLogin);
+					statusString = "Auto Logging In";
+					service.login.withHash(loginSharedObj.data.userID,loginSharedObj.data.passwordHash);
+					loginBTN.enabled=false;
+				}
+				var locationSO:SharedObject = SharedObject.getLocal("locationData");					
+				if(locationSO.size > 0) {
+					stage.nativeWindow.x = locationSO.data.x;
+					stage.nativeWindow.y = locationSO.data.y;
+				}
+			}
+			
+			
+			private function onLogin(event:SmugMugResultEvent):void {
+				if(event.success) {
+					currentState="loggedin";
+					service.sessionID = event.data.login.Login.Session.id;
+					service.albums.get(null,true);
+					if(true==true) {
+						var lso:SharedObject = SharedObject.getLocal("loginInfo");
+						lso.data.userID = event.data.login.Login.User.id;
+						lso.data.passwordHash = event.data.login.Login.PasswordHash;
+					}
+				}
+				else {
+					
+					statusString = "Invalid Login";
+				}
+				loginBTN.enabled=true;
+			}
+			
+			private function onGetAlbums(event:SmugMugResultEvent):void {
+				albums.source = event.data.Albums as Array;
+				pendingAlbums = albums.source.length;
+				for each(var a:Object in albums.source) {
+					service.images.get(a.id,true);
+				}
+			}
+
+			private function onImagesGet(event:SmugMugResultEvent):void {
+				pendingAlbums--;
+				if(event.success) {
+					if(event.data.Images.length > 0) {
+						var albumid:int = event.data.Images[0].Album.id;
+						var currentAlbum:Object;
+						var curs:IViewCursor = albums.createCursor();
+						while(!curs.afterLast) {
+							if(curs.current.id == albumid)
+								currentAlbum = curs.current;
+							curs.moveNext();
+						}
+						currentAlbum.images = event.data.Images;
+					}
+				}
+				if(pendingAlbums == 0)
+					currentState="fullyLoaded";
+			}
+			
+			private function onLogout(event:SmugMugResultEvent):void {
+				currentState = "notloggedin";
+			}	
+			
+			private function onDoubleClick(event:Event):void {
+				var i:int = 0;
+			}
+			
+			private function finishedDrag(event:DragEvent):void {
+				var i:int = 0;
+				var items:Object = event.dragSource.dataForFormat("items");
+				var index:Object = event.dragSource.dataForFormat("index");
+				var imagesArr:Array = albumsCB.selectedItem.images;
+				var foundImage:Boolean = false;
+				while( (i < imagesArr.length) && (foundImage==false) ) {
+					if(imagesArr[i] == items[0]) {
+						foundImage = true;
+					}else {
+						i++;	
+					}
+				}
+				if(i != index) {
+					service.images.changePosition(items[0].id,i+1);
+					lockApp = true;
+				}
+			}
+			
+			private function onImagesChangePosition(event:SmugMugResultEvent):void {
+				trace(event.success);
+			}
+			
+			private function login(username:String, password:String):void {
+				service.login.withPassword(username, password);	
+				statusString = "Logging In";	
+				loginBTN.enabled=false;		
+			}
+						
+		]]>
+	</mx:Script>
+	<mx:states>
+		<mx:State name="loggedin" exitState="progressbar1.indeterminate=false;removeChild(progressbar1)">
+			<mx:AddChild position="lastChild">
+				<mx:Image x="10" y="10" width="246" height="65" source="@Embed('resources/smuglogo.png')"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:ProgressBar x="85.5" y="115" indeterminate="true" label="Gathering Information.. please wait" width="319" fontWeight="bold" fontSize="15" labelPlacement="top" id="progressbar1"/>
+			</mx:AddChild>
+			<mx:SetProperty name="height" value="253"/>
+			<mx:SetProperty name="width" value="434"/>
+		</mx:State>
+		<mx:State name="notloggedin">
+			<mx:AddChild position="lastChild">
+				<mx:Image source="@Embed('resources/loginInterface.png')" bottom="24" right="14" top="10" left="32"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="194" y="254" text="{statusString}" width="94" id="label1"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="142" y="158" text="Username"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="142" y="184" text="Password"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextInput x="212" y="156" id="usernameTxt"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TextInput x="212" y="182" id="passwordTxt" displayAsPassword="true"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Button x="281" y="213" label="Login" click="login(usernameTxt.text,passwordTxt.text)" id="loginBTN"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:CheckBox x="142" y="213" label="Remember me" id="rememberMeCheck"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="142" y="121" text="Please Login" width="146" fontWeight="bold"/>
+			</mx:AddChild>
+			<mx:SetProperty name="height" value="349"/>
+			<mx:SetProperty name="width" value="466"/>
+		</mx:State>
+		<mx:State name="fullyLoaded">
+			<mx:AddChild position="lastChild">
+				<ns1:DragTile left="175" right="10" bottom="20" top="83" dataProvider="{albumsCB.selectedItem.images}" 
+							dragEnter="event.target.allowDrag(event);" 
+							dragOver='event.target.showDragFeedback(event,event.shiftKey? "copy":"move")' dragDrop="finishedDrag(event)">
+					<ns1:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingTop="5" paddingBottom="5" 
+							borderStyle="solid" borderColor="#8AA6D4" borderSides="bottom" toolTip="{data.Caption}">
+							<ns1:SuperImage  source="{data.ThumbURL}" width="83" height="83" />
+							</mx:HBox>
+						</mx:Component>
+					</ns1:itemRenderer>
+				</ns1:DragTile>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:List x="5" width="162" dataProvider="{albums}" id="albumsCB" labelField="Title" bottom="20" top="83" ></mx:List>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Image x="10" y="10" width="246" height="65" source="@Embed('resources/smuglogo.png')"/>
+			</mx:AddChild>
+			<mx:SetProperty name="width" value="892"/>
+			<mx:SetProperty name="height" value="623"/>
+			<mx:AddChild position="lastChild">
+				<mx:Label x="264" y="10" text="Album Organizer" width="258" fontSize="18" fontWeight="bold"/>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:Text x="264" y="46" width="588" height="29">
+					<mx:text><![CDATA[Select an album on the left, now drag and drop the photos around within the album to re-arrange stuff.]]></mx:text>
+				</mx:Text>
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+
+</mx:WindowedApplication>
