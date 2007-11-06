@@ -17,7 +17,7 @@
 			private var fileRef:FileReference = new FileReference();
 			
 			private function init():void {
-				service = new SmugMugService("rXcjRmeEXiGS6gkjWunJdLPVuUuwNkx4",false);
+				service = new SmugMugService("APIKEY",false);
 				service.addEventListener(SmugMugResultEvent.LOGIN_WITHPASSWORD, onLoginResult);
 				service.addEventListener(SmugMugResultEvent.USERS_GETTREE, onUsersGetTree);
 				service.addEventListener(SmugMugResultEvent.ALBUMS_GET, onAlbumsGet);

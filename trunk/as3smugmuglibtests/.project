@@ -19,7 +19,7 @@
 		<link>
 			<name>[source path] tests</name>
 			<type>2</type>
-			<location>{DOCUMENTS}SmugMugTest/tests</location>
+			<location>D:/eclipse32workspace/as3smugmuglibtests/tests</location>
 		</link>
 	</linkedResources>
 </projectDescription>
