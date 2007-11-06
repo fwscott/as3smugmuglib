@@ -136,7 +136,7 @@ package com.fwscott.webapis.smugmug.v1_2_0
 		private function onCategoriesCreate(event:SmugMugResultEvent):void {
 			assertGenericPassOrFail( event );
 			if(event.success)
-				setupProperties.newcatid = int(event.data.Category.@id);
+				setupProperties.newcatid = int(event.data.Category.id);
 		}		
 
 		public function testCategoriesRename():void {
@@ -194,7 +194,7 @@ package com.fwscott.webapis.smugmug.v1_2_0
 		private function onSubCategoriesCreate(event:SmugMugResultEvent):void {
 			assertGenericPassOrFail( event );
 			if(event.success)
-				setupProperties.newsubcatid = int(event.data.SubCategory.@id);
+				setupProperties.newsubcatid = int(event.data.SubCategory.id);
 		}		
 
 		public function testSubCategoriesRename():void {
@@ -209,7 +209,7 @@ package com.fwscott.webapis.smugmug.v1_2_0
 		}		
 
 		public function testSubCategoriesDelete():void {
-			_service.addEventListener( SmugMugResultEvent.CATEGORIES_DELETE, 
+			_service.addEventListener( SmugMugResultEvent.SUBCATEGORIES_DELETE, 
 									  addAsync( onSubCategoriesDelete, CALL_TIMEOUT ) );
 			
 			_service.subCategories.deleteSubCategory(setupProperties.newsubcatid);				
@@ -241,8 +241,8 @@ package com.fwscott.webapis.smugmug.v1_2_0
 		private function onAlbumsGet(event:SmugMugResultEvent):void {
 			assertGenericPassOrFail(event);
 			if(event.success) {
-				var albums:XMLList = event.data.Albums.Album;
-				setupProperties.inspectalbumid = albums[0].@id;
+				var albums:Array = event.data.Albums;
+				setupProperties.inspectalbumid = albums[0].id;
 			}
 		}		
 	
@@ -303,7 +303,7 @@ package com.fwscott.webapis.smugmug.v1_2_0
 		private function onAlbumsCreate(event:SmugMugResultEvent):void {
 			assertGenericPassOrFail(event);
 			if(event.success) {
-				setupProperties.newalbumid = event.data.Album.@id;
+				setupProperties.newalbumid = event.data.Album.id;
 			}
 		}				
 
