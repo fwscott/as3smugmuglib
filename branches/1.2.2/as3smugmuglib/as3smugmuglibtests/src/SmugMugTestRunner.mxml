@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:flexunit="flexunit.flexui.*"
+				creationComplete="onCreationComplete()">
+	<mx:Script>
+		<![CDATA[
+			import com.fwscott.webapis.smugmug.v1_2_0.SmugMugServiceTestAuthPassword;
+			import com.fwscott.webapis.smugmug.v1_2_0.TestSetupProperties;
+			
+			import com.fwscott.webapis.smugmug.*;
+			import flexunit.framework.TestSuite;
+			private var testWithPasswordProps:TestSetupProperties;
+			
+			private function onCreationComplete():void
+			{
+				testWithPasswordProps = new TestSetupProperties();
+				testWithPasswordProps.API_KEY = "apikey"; //Make Sure to set this
+				testWithPasswordProps.EMAILADDRESS = "emailaddress"; //Make Sure to Set this
+				testWithPasswordProps.PASSWORD = "password"; 				//Make Sure to Set this
+				SmugMugServiceTestAuthPassword.setupProperties = testWithPasswordProps;
+				testRunner.test = createSuite();
+				testRunner.startTest();
+			}
+			
+			private function createSuite():TestSuite {
+				var ts:TestSuite = new TestSuite();
+				
+				ts.addTest( NameValuePairTest.suite() );
+//				ts.addTest( ValueObjectTest.suite() );
+				ts.addTest( SmugMugServiceTestAuthPassword.suite() );
+				
+				return ts;	
+			}
+			
+		]]>
+	</mx:Script>
+	<flexunit:TestRunnerBase id="testRunner" width="100%" height="100%">
+	</flexunit:TestRunnerBase>	
+</mx:Application>
