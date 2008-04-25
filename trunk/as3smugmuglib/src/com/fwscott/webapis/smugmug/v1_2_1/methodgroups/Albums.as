@@ -37,12 +37,13 @@ package com.fwscott.webapis.smugmug.v1_2_1.methodgroups
 												  null );				
 		}
 		
-		public function getInfo( albumID:int, password:String = null, sitePassword:String = null ):void {
+		public function getInfo( albumID:int, albumKey:String, password:String = null, sitePassword:String = null ):void {
 			// Let the Helper do the work to invoke the method
 			MethodGroupHelper.invokeMethod( _service, getInfo_result, 
 								   "smugmug.albums.getInfo", 
 								   ( (sitePassword!=null) || (password!=null) ),
 								   new NameValuePair( "AlbumID", albumID.toString() ),
+								   new NameValuePair( "AlbumKey", albumKey ),
 								   new NameValuePair( "Password", password ),
 								   new NameValuePair( "SitePassword", sitePassword ) );							
 		}
