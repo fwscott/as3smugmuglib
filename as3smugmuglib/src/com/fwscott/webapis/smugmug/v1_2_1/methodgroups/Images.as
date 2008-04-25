@@ -20,12 +20,13 @@ package com.fwscott.webapis.smugmug.v1_2_1.methodgroups
 		}
 
 		
-		public function get( albumID:int, heavy:Boolean=false, password:String=null, sitePassword:String=null ):void {
+		public function get( albumID:int, albumKey:String, heavy:Boolean=false, password:String=null, sitePassword:String=null ):void {
 			// Let the Helper do the work to invoke the method
 			MethodGroupHelper.invokeMethod( _service, get_result, 
 								   "smugmug.images.get", 
 								   ((sitePassword!=null) || (password!=null)),
 								   new NameValuePair( "AlbumID", albumID ),
+								   new NameValuePair( "AlbumKey", albumKey ),
 								   new NameValuePair( "Heavy", heavy ),
 								   new NameValuePair( "Password", password ),
 								   new NameValuePair( "SitePassword", sitePassword ) );						
@@ -41,12 +42,13 @@ package com.fwscott.webapis.smugmug.v1_2_1.methodgroups
 												  null );				
 		}		
 
-		public function getURLs( imageID:int, templateID:int=3, password:String=null, sitePassword:String=null ):void {
+		public function getURLs( imageID:int, imageKey:String, templateID:int=3, password:String=null, sitePassword:String=null ):void {
 			// Let the Helper do the work to invoke the method
 			MethodGroupHelper.invokeMethod( _service, getURLs_result, 
 								   "smugmug.images.getURLs", 
 								   ((sitePassword!=null) || (password!=null)),
 								   new NameValuePair( "ImageID", imageID ),
+								   new NameValuePair( "ImageKey", imageKey ),
 								   new NameValuePair( "TemplateID", templateID ),
 								   new NameValuePair( "Password", password ),
 								   new NameValuePair( "SitePassword", sitePassword ) );						
@@ -62,12 +64,13 @@ package com.fwscott.webapis.smugmug.v1_2_1.methodgroups
 												  null );				
 		}		
 
-		public function getInfo( imageID:int, password:String=null, sitePassword:String=null ):void {
+		public function getInfo( imageID:int, imageKey:String, password:String=null, sitePassword:String=null ):void {
 			// Let the Helper do the work to invoke the method
 			MethodGroupHelper.invokeMethod( _service, getInfo_result, 
 								   "smugmug.images.getInfo", 
 								   ((sitePassword!=null) || (password!=null)),
 								   new NameValuePair( "ImageID", imageID ),
+								   new NameValuePair( "ImageKey", imageKey ),
 								   new NameValuePair( "Password", password ),
 								   new NameValuePair( "SitePassword", sitePassword ) );						
 		}
@@ -82,12 +85,13 @@ package com.fwscott.webapis.smugmug.v1_2_1.methodgroups
 												  null );				
 		}		
 
-		public function getEXIF( imageID:int, password:String=null, sitePassword:String=null ):void {
+		public function getEXIF( imageID:int, imageKey:String, password:String=null, sitePassword:String=null ):void {
 			// Let the Helper do the work to invoke the method
 			MethodGroupHelper.invokeMethod( _service, getEXIF_result, 
 								   "smugmug.images.getEXIF", 
 								   ((sitePassword!=null) || (password!=null)),
 								   new NameValuePair( "ImageID", imageID ),
+								   new NameValuePair( "ImageKey", imageKey ),
 								   new NameValuePair( "Password", password ),
 								   new NameValuePair( "SitePassword", sitePassword ) );						
 		}
