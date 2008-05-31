@@ -105,10 +105,13 @@
 			
 			private function finishedDrag(event:DragEvent):void {
 				var i:int = 0;
-				var items:Object = event.dragSource.dataForFormat("items");
-				var index:Object = event.dragSource.dataForFormat("index");
+				var startIndex:Number = event.currentTarget.selectedIndex;
+				var newIndex:Number =  event.currentTarget.calculateDropIndex(event);
+ 				var items:Object = event.dragSource.dataForFormat("items");
+/*				var index:Object = event.dragSource.dataForFormat("index");
 				var imagesArr:Array = albumsCB.selectedItem.images;
 				var foundImage:Boolean = false;
+				
 				while( (i < imagesArr.length) && (foundImage==false) ) {
 					if(imagesArr[i] == items[0]) {
 						foundImage = true;
@@ -117,9 +120,9 @@
 					}
 				}
 				if(i != index) {
-					service.images.changePosition(items[0].id,i+1);
+ */					service.images.changePosition(items[0].id,newIndex+1);
 					lockApp = true;
-				}
+	//			}
 			}
 			
 			private function onImagesChangePosition(event:SmugMugResultEvent):void {
@@ -178,20 +181,6 @@
 		</mx:State>
 		<mx:State name="fullyLoaded">
 			<mx:AddChild position="lastChild">
-				<ns1:DragTile left="175" right="10" bottom="20" top="83" dataProvider="{albumsCB.selectedItem.images}" 
-							dragEnter="event.target.allowDrag(event);" 
-							dragOver='event.target.showDragFeedback(event,event.shiftKey? "copy":"move")' dragDrop="finishedDrag(event)">
-					<ns1:itemRenderer>
-						<mx:Component>
-							<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingTop="5" paddingBottom="5" 
-							borderStyle="solid" borderColor="#8AA6D4" borderSides="bottom" toolTip="{data.Caption}">
-							<ns1:SuperImage  source="{data.ThumbURL}" width="83" height="83" />
-							</mx:HBox>
-						</mx:Component>
-					</ns1:itemRenderer>
-				</ns1:DragTile>
-			</mx:AddChild>
-			<mx:AddChild position="lastChild">
 				<mx:List x="5" width="162" dataProvider="{albums}" id="albumsCB" labelField="Title" bottom="20" top="83" ></mx:List>
 			</mx:AddChild>
 			<mx:AddChild position="lastChild">
@@ -206,6 +195,19 @@
 				<mx:Text x="264" y="46" width="588" height="29">
 					<mx:text><![CDATA[Select an album on the left, now drag and drop the photos around within the album to re-arrange stuff.]]></mx:text>
 				</mx:Text>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<mx:TileList id="imageList" left="175" right="10" bottom="20" top="83" allowDragSelection="true" dragEnabled="true" dropEnabled="true" dataProvider="{albumsCB.selectedItem.images}" 
+						dragMoveEnabled="true"	dragDrop="finishedDrag(event)">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:HBox horizontalScrollPolicy="off" verticalScrollPolicy="off" verticalAlign="middle" paddingTop="5" paddingBottom="5" 
+							borderStyle="solid" borderColor="#8AA6D4" borderSides="bottom" toolTip="{data.Caption}">
+							<ns1:SuperImage  source="{data.ThumbURL}" width="83" height="83" />
+							</mx:HBox>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:TileList>
 			</mx:AddChild>
 		</mx:State>
 	</mx:states>

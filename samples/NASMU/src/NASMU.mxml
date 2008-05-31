@@ -13,6 +13,8 @@
 	</mx:Style>
 	<mx:Script>
 		<![CDATA[
+			import mx.core.IUIComponent;
+			import mx.managers.DragManager;
 			import mx.events.CloseEvent;
 			import mx.binding.utils.BindingUtils;
 			import com.fwscott.webapis.smugmug.v1_2_1.events.SmugMugResultEvent;
@@ -229,13 +231,13 @@
 	        private function onDragEnter( event:NativeDragEvent ) :void
 	        {
 	        	if(currentState=="loggedin")
-	           		DragManager.acceptDragDrop(event.currentTarget as DisplayObject);
+	           		NativeDragManager.acceptDragDrop(event.currentTarget as InteractiveObject);
 	        }
 	
 	        private function onDragDrop( event:NativeDragEvent ) :void
 	        {
-	            DragManager.dropAction = DragActions.COPY;
-	            var files:Array = event.clipboard.dataForFormat(flash.desktop.ClipboardFormats.FILE_LIST_FORMAT) as Array;
+	            NativeDragManager.dropAction = NativeDragActions.COPY;
+	            var files:Array = event.clipboard.getData(flash.desktop.ClipboardFormats.FILE_LIST_FORMAT) as Array;
 	            for each (var f:File in files)
 	            {
 	               addFile( FileReference( f ) );
